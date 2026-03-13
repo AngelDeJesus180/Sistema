@@ -1,0 +1,92 @@
+.orders-page { min-height: 100vh; background: var(--bg); }
+
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 64px;
+  background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  .nav-brand { display: flex; align-items: center; gap: 10px;
+    .brand-icon { color: var(--accent); font-size: 20px; }
+    .brand-text { font-family: var(--font-display); font-size: 22px; letter-spacing: 4px; }
+  }
+  .nav-actions { display: flex; align-items: center; gap: 16px;
+    .nav-user { font-size: 13px; color: var(--text-dim); }
+  }
+}
+
+.page-header {
+  padding: 50px 40px 30px;
+  .page-title { font-family: var(--font-display); font-size: clamp(40px, 6vw, 80px); letter-spacing: 6px; }
+  .page-sub { margin-top: 10px; font-size: 13px; color: var(--text-muted); letter-spacing: 1px; }
+}
+
+.state-container { display: flex; align-items: center; justify-content: center; min-height: 300px; }
+.loader { text-align: center; color: var(--text-dim);
+  .loader-ring { width: 40px; height: 40px; border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  p { font-size: 13px; letter-spacing: 1px; }
+}
+.error-state { text-align: center; color: var(--text-dim);
+  .error-icon { display: block; font-size: 40px; margin-bottom: 12px; }
+  p { margin-bottom: 20px; font-size: 14px; }
+}
+
+.orders-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px; padding: 0 40px 60px;
+}
+
+.order-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden; transition: var(--transition);
+  &:hover { border-color: var(--border-hover); }
+
+  .order-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    .order-id-wrap { display: flex; flex-direction: column; gap: 2px;
+      .order-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); }
+      .order-id { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; color: var(--accent); }
+    }
+  }
+
+  .order-status {
+    padding: 6px 14px; border-radius: 2px; font-size: 10px; font-weight: 800; letter-spacing: 2px;
+    &.status-pending { background: rgba(255,170,68,0.15); color: #ffaa44; border: 1px solid rgba(255,170,68,0.3); }
+    &.status-cancelled { background: rgba(255,68,68,0.15); color: var(--error); border: 1px solid rgba(255,68,68,0.3); }
+    &.status-done { background: rgba(68,204,136,0.15); color: #44cc88; border: 1px solid rgba(68,204,136,0.3); }
+  }
+
+  .order-body {
+    padding: 20px 24px; display: flex; gap: 32px;
+    .order-detail { display: flex; flex-direction: column; gap: 4px;
+      .detail-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); }
+      .detail-value { font-size: 18px; font-weight: 600; }
+    }
+  }
+
+  .order-footer {
+    padding: 14px 24px; border-top: 1px solid var(--border);
+    .cancel-btn {
+      width: 100%; padding: 10px; background: transparent;
+      border: 1px solid rgba(255,68,68,0.3); border-radius: var(--radius);
+      color: var(--error); font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      cursor: pointer; transition: var(--transition);
+      &:hover:not(:disabled) { background: rgba(255,68,68,0.08); }
+      &:disabled { opacity: 0.4; cursor: not-allowed; }
+    }
+    .cancelled-label { display: block; text-align: center; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+  }
+}
+
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  padding: 12px 28px; border-radius: var(--radius); font-size: 13px; font-weight: 600;
+  z-index: 9999; animation: fadeIn 0.3s ease;
+  &.success { background: var(--success); color: #000; }
+  &.error { background: var(--error); color: #fff; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }

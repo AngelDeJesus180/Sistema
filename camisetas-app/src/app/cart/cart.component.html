@@ -1,0 +1,74 @@
+<div class="cart-page">
+  <nav class="cart-nav">
+    <button class="btn-ghost" (click)="goBack()">← Seguir comprando</button>
+    <div class="nav-brand">
+      <span style="color:var(--accent)">◈</span>
+      <span style="font-family:var(--font-display);letter-spacing:4px">CAMISETAS</span>
+    </div>
+  </nav>
+
+  <div class="success-screen fade-in" *ngIf="success">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      <h2>¡PEDIDOS CONFIRMADOS!</h2>
+      <p>Se crearon {{ orderIds.length }} pedido(s) exitosamente</p>
+      <div class="order-ids" *ngIf="orderIds.length > 0">
+        <span *ngFor="let id of orderIds" class="order-id">#{{ id }}</span>
+      </div>
+      <button class="btn-primary" style="margin-bottom:12px" (click)="goToOrders()">VER MIS PEDIDOS</button>
+      <button class="btn-ghost" (click)="goBack()">SEGUIR COMPRANDO</button>
+    </div>
+  </div>
+
+  <div class="cart-container" *ngIf="!success">
+    <h1 class="cart-title">TU CARRITO</h1>
+
+    <div class="empty-cart" *ngIf="items.length === 0">
+      <span class="empty-icon">🛒</span>
+      <p>Tu carrito está vacío</p>
+      <button class="btn-primary" (click)="goBack()">VER CATÁLOGO</button>
+    </div>
+
+    <div class="cart-content" *ngIf="items.length > 0">
+      <div class="cart-items">
+        <div class="cart-item" *ngFor="let item of items">
+          <div class="item-visual">
+            <span class="item-icon">◈</span>
+            <span class="item-talla">{{ item.camiseta.talla }}</span>
+          </div>
+          <div class="item-info">
+            <p class="item-name">{{ item.camiseta.color }} — {{ item.camiseta.tipoManga }}</p>
+            <p class="item-price">${{ item.camiseta.precio | number }} c/u</p>
+            <p class="item-stock-warning" *ngIf="item.cantidad >= (item.camiseta.stock ?? 0)">⚠ Máximo disponible</p>
+          </div>
+          <div class="item-qty">
+            <button class="qty-btn" (click)="decrement(item)" [disabled]="item.cantidad <= 1">−</button>
+            <span class="qty-value">{{ item.cantidad }}</span>
+            <button class="qty-btn" (click)="increment(item)" [disabled]="item.cantidad >= (item.camiseta.stock ?? 0)">+</button>
+          </div>
+          <div class="item-subtotal">${{ (item.camiseta.precio * item.cantidad) | number }}</div>
+          <button class="remove-btn" (click)="remove(item)">✕</button>
+        </div>
+      </div>
+
+      <div class="cart-summary">
+        <h3 class="summary-title">RESUMEN</h3>
+        <div class="summary-rows">
+          <div class="summary-row" *ngFor="let item of items">
+            <span>{{ item.camiseta.color }} ({{ item.camiseta.talla }}) × {{ item.cantidad }}</span>
+            <span>${{ (item.camiseta.precio * item.cantidad) | number }}</span>
+          </div>
+        </div>
+        <div class="summary-total">
+          <span>TOTAL</span>
+          <span class="total-amount">${{ total | number }}</span>
+        </div>
+        <div class="error-msg" *ngIf="error">{{ error }}</div>
+        <button class="btn-primary checkout-btn" (click)="checkout()" [disabled]="loading || items.length === 0">
+          <span *ngIf="!loading">CONFIRMAR PEDIDO ({{ items.length }} item{{ items.length > 1 ? 's' : '' }})</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

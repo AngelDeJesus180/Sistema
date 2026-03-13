@@ -1,0 +1,22 @@
+{
+  "/auth/login": {
+    "target": "http://localhost:8081",
+    "changeOrigin": true,
+    "secure": false
+  },
+  "/auth/register": {
+    "target": "http://localhost:8082",
+    "changeOrigin": true,
+    "secure": false
+  },
+  "/catalog": {
+    "target": "http://localhost:8081",
+    "changeOrigin": true,
+    "secure": false
+  },
+  "/orders": {
+    "target": "http://localhost:8084",
+    "changeOrigin": true,
+    "secure": false
+  }
+}

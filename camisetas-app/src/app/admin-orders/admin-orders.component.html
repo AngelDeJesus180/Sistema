@@ -1,0 +1,90 @@
+<div class="admin-orders-page">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">◈</span>
+      <span class="brand-text">CAMISETAS</span>
+    </div>
+    <div class="nav-actions">
+      <span class="admin-badge">ADMIN</span>
+      <button class="btn-ghost" (click)="goBack()">← Catálogo</button>
+      <button class="btn-ghost" (click)="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <h1 class="page-title">TODOS LOS PEDIDOS</h1>
+    <div class="stats">
+      <div class="stat"><span class="stat-val">{{ orders.length }}</span><span class="stat-label">TOTAL</span></div>
+      <div class="stat"><span class="stat-val" style="color:#ffaa44">{{ totalPendientes }}</span><span class="stat-label">PENDIENTES</span></div>
+      <div class="stat"><span class="stat-val" style="color:var(--error)">{{ totalCancelados }}</span><span class="stat-label">CANCELADOS</span></div>
+    </div>
+  </header>
+
+  <!-- Filtros -->
+  <div class="filters" *ngIf="!loading && !error">
+    <div class="filter-group">
+      <label>ESTADO</label>
+      <select [(ngModel)]="filterStatus" (change)="applyFilter()">
+        <option value="TODOS">Todos</option>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="CANCELLED">Cancelado</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>USUARIO</label>
+      <input type="text" [(ngModel)]="filterUser" (input)="applyFilter()" placeholder="Buscar usuario..."/>
+    </div>
+    <span class="filter-result">{{ filtered.length }} resultado(s)</span>
+  </div>
+
+  <div class="state-container" *ngIf="loading">
+    <div class="loader"><div class="loader-ring"></div><p>Cargando pedidos...</p></div>
+  </div>
+
+  <div class="state-container" *ngIf="error && !loading">
+    <div class="error-state">
+      <span class="error-icon">⚠</span><p>{{ error }}</p>
+      <button class="btn-ghost" (click)="load()">Reintentar</button>
+    </div>
+  </div>
+
+  <div class="state-container" *ngIf="!loading && !error && filtered.length === 0">
+    <div class="error-state">
+      <span class="error-icon">📦</span><p>No hay pedidos que coincidan</p>
+    </div>
+  </div>
+
+  <div class="orders-table-wrap fade-in" *ngIf="!loading && !error && filtered.length > 0">
+    <table class="orders-table">
+      <thead>
+      <tr>
+        <th>#ID</th>
+        <th>USUARIO</th>
+        <th>PRODUCTO ID</th>
+        <th>CANTIDAD</th>
+        <th>ESTADO</th>
+        <th>ACCIONES</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let order of filtered">
+        <td class="id-cell">#{{ order.id }}</td>
+        <td class="user-cell">{{ order.username || '—' }}</td>
+        <td>{{ order.productoId }}</td>
+        <td>{{ order.cantidad }}</td>
+        <td><span class="order-status" [ngClass]="getStatusClass(order.status)">{{ order.status }}</span></td>
+        <td>
+          <button class="cancel-btn-sm" *ngIf="canCancel(order)"
+                  [disabled]="cancellingId === order.id"
+                  (click)="cancel(order)">
+            {{ cancellingId === order.id ? '...' : '✕ Cancelar' }}
+          </button>
+          <span class="done-label" *ngIf="!canCancel(order)">Cancelado</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="toast" [class.success]="toastType==='success'" [class.error]="toastType==='error'" *ngIf="toast">{{ toast }}</div>
+</div>

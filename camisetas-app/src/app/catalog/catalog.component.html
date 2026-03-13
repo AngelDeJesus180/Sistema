@@ -1,0 +1,191 @@
+<div class="catalog-page">
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">◈</span>
+      <span class="brand-text">CAMISETAS</span>
+    </div>
+    <div class="nav-actions">
+      <span class="admin-badge" *ngIf="isAdmin">ADMIN</span>
+      <span class="nav-user">{{ username }}</span>
+      <button class="btn-ghost" *ngIf="isAdmin" (click)="goToAdminOrders()">📋 Pedidos</button>
+      <button class="cart-btn" *ngIf="!isAdmin" (click)="goToCart()">
+        🛒 <span class="cart-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
+      </button>
+      <button class="btn-ghost" *ngIf="!isAdmin" (click)="goToMyOrders()">📦 Mis pedidos</button>
+      <button class="btn-ghost" (click)="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <header class="catalog-header">
+    <div class="header-left">
+      <h1 class="catalog-title">CATÁLOGO</h1>
+      <p class="catalog-sub">{{ camisetas.length }} productos disponibles</p>
+    </div>
+    <button class="btn-primary add-btn" *ngIf="isAdmin" (click)="openCreate()">+ NUEVA CAMISETA</button>
+  </header>
+
+  <div class="state-container" *ngIf="loading">
+    <div class="loader"><div class="loader-ring"></div><p>Cargando catálogo...</p></div>
+  </div>
+  <div class="state-container" *ngIf="error && !loading">
+    <div class="error-state">
+      <span class="error-icon">⚠</span><p>{{ error }}</p>
+      <button class="btn-ghost" (click)="loadCatalog()">Reintentar</button>
+    </div>
+  </div>
+
+  <div class="catalog-grid fade-in" *ngIf="!loading && !error">
+    <article class="card" *ngFor="let cam of camisetas; let i = index"
+             [style.animation-delay]="(i * 0.05) + 's'"
+             [class.out-of-stock]="cam.stock === 0">
+
+      <div class="card-visual" [style.background]="getCssColor(cam.color) + '18'">
+
+        <!-- MANGA CORTA -->
+        <svg *ngIf="isCorta(cam)" class="tshirt-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient [id]="'gc'+cam.id" x1="0" y1="0" x2="0.3" y2="1">
+              <stop offset="0%" [attr.stop-color]="getCssColor(cam.color)"/>
+              <stop offset="100%" [attr.stop-color]="getDarkColor(cam.color)"/>
+            </linearGradient>
+          </defs>
+          <path [attr.fill]="'url(#gc'+cam.id+')'" [attr.stroke]="getDarkColor(cam.color)" stroke-width="2"
+                d="M72,48 Q100,32 128,48 L143,52 L153,90 L132,94 L130,68 L130,172 Q100,182 70,172 L70,68 L68,94 L47,90 L57,52 Z"/>
+          <path [attr.fill]="getDarkColor(cam.color)" opacity="0.4"
+                d="M80,48 Q100,36 120,48 Q100,62 80,48 Z"/>
+        </svg>
+
+        <!-- MANGA LARGA -->
+        <svg *ngIf="isLarga(cam)" class="tshirt-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient [id]="'gl'+cam.id" x1="0" y1="0" x2="0.3" y2="1">
+              <stop offset="0%" [attr.stop-color]="getCssColor(cam.color)"/>
+              <stop offset="100%" [attr.stop-color]="getDarkColor(cam.color)"/>
+            </linearGradient>
+          </defs>
+          <path [attr.fill]="'url(#gl'+cam.id+')'" [attr.stroke]="getDarkColor(cam.color)" stroke-width="2"
+                d="M70,52 L55,58 L28,115 L48,120 L68,74 L68,172 Q100,183 132,172 L132,74 L152,120 L172,115 L145,58 L130,52 Q100,34 70,52 Z"/>
+          <path [attr.fill]="getDarkColor(cam.color)" opacity="0.4"
+                d="M80,52 Q100,38 120,52 Q100,66 80,52 Z"/>
+          <rect [attr.fill]="getDarkColor(cam.color)" opacity="0.5" x="29" y="113" width="19" height="7" rx="2"/>
+          <rect [attr.fill]="getDarkColor(cam.color)" opacity="0.5" x="152" y="113" width="19" height="7" rx="2"/>
+        </svg>
+
+        <!-- SIN MANGAS -->
+        <svg *ngIf="isSinManga(cam)" class="tshirt-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient [id]="'gs'+cam.id" x1="0" y1="0" x2="0.3" y2="1">
+              <stop offset="0%" [attr.stop-color]="getCssColor(cam.color)"/>
+              <stop offset="100%" [attr.stop-color]="getDarkColor(cam.color)"/>
+            </linearGradient>
+          </defs>
+          <path [attr.fill]="'url(#gs'+cam.id+')'" [attr.stroke]="getDarkColor(cam.color)" stroke-width="2"
+                d="M80,40 Q100,28 120,40 L128,55 L128,172 Q100,183 72,172 L72,55 Z"/>
+          <path [attr.fill]="getDarkColor(cam.color)" opacity="0.4"
+                d="M86,40 Q100,30 114,40 Q100,56 86,40 Z"/>
+        </svg>
+
+        <span class="talla-badge" [style.background]="getTallaColor(cam.talla)">{{ cam.talla }}</span>
+        <span class="manga-tag">{{ cam.tipoManga }}</span>
+        <span class="no-stock-overlay" *ngIf="cam.stock === 0">SIN STOCK</span>
+      </div>
+
+      <div class="card-body">
+        <h3 class="card-name">
+          <span class="color-dot" [style.background]="getCssColor(cam.color)"></span>
+          {{ cam.color }}
+        </h3>
+
+        <div class="inline-edit" *ngIf="isAdmin && cam.id">
+          <div class="inline-field">
+            <label>PRECIO $</label>
+            <input type="number" [(ngModel)]="inlineEdit[cam.id].precio" min="0.01" step="0.01" (click)="$event.stopPropagation()"/>
+          </div>
+          <div class="inline-field">
+            <label>STOCK</label>
+            <input type="number" [(ngModel)]="inlineEdit[cam.id].stock" min="0" (click)="$event.stopPropagation()"/>
+          </div>
+          <button class="save-inline-btn" (click)="saveInline(cam, $event)" [disabled]="savingInline[cam.id]">
+            {{ savingInline[cam.id] ? '...' : '✓ Guardar' }}
+          </button>
+        </div>
+
+        <div class="card-meta">
+          <span class="card-price">${{ cam.precio | number }}</span>
+          <span class="card-stock" [class.low]="cam.stock > 0 && cam.stock < 10" [class.empty]="cam.stock === 0">
+            {{ cam.stock === 0 ? 'Agotado' : cam.stock + ' en stock' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-footer" *ngIf="isAdmin">
+        <button class="admin-btn edit" (click)="openEdit(cam, $event)">✏ Editar</button>
+        <button class="admin-btn delete" (click)="deleteCamiseta(cam, $event)">✕ Eliminar</button>
+      </div>
+
+      <div class="card-footer user-footer" *ngIf="!isAdmin">
+        <button class="add-cart-btn" [disabled]="cam.stock === 0" (click)="addToCart(cam, $event)">
+          {{ cam.stock === 0 ? 'SIN STOCK' : '+ Agregar al carrito' }}
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <div class="state-container" *ngIf="!loading && !error && camisetas.length === 0">
+    <div class="error-state">
+      <span class="error-icon">○</span><p>No hay camisetas disponibles</p>
+      <button class="btn-primary" *ngIf="isAdmin" (click)="openCreate()">+ Agregar primera</button>
+    </div>
+  </div>
+
+  <div class="toast" [class.success]="toastType==='success'" [class.error]="toastType==='error'" *ngIf="toast">{{ toast }}</div>
+
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingId ? 'EDITAR' : 'NUEVA CAMISETA' }}</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+      <form [formGroup]="modalForm" (ngSubmit)="saveModal()" class="modal-form">
+        <div class="field-row">
+          <div class="field">
+            <label>TALLA</label>
+            <select formControlName="talla">
+              <option *ngFor="let t of tallas" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>TIPO MANGA</label>
+            <select formControlName="tipoManga">
+              <option *ngFor="let tm of tiposManga" [value]="tm">{{ tm }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>COLOR</label>
+          <input type="text" formControlName="color" placeholder="Ej: Rojo, Azul marino..."/>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>PRECIO</label>
+            <input type="number" formControlName="precio" placeholder="21.99" min="0.01" step="0.01"/>
+          </div>
+          <div class="field">
+            <label>STOCK</label>
+            <input type="number" formControlName="stock" placeholder="0" min="0"/>
+          </div>
+        </div>
+        <div class="error-msg" *ngIf="modalError">{{ modalError }}</div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="modalForm.invalid || modalLoading">
+            <span *ngIf="!modalLoading">{{ editingId ? 'GUARDAR' : 'CREAR' }}</span>
+            <span *ngIf="modalLoading" class="spinner"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

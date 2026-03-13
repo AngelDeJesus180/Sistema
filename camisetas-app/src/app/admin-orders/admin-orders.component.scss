@@ -1,0 +1,96 @@
+.admin-orders-page { min-height: 100vh; background: var(--bg); }
+
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 64px;
+  background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  .nav-brand { display: flex; align-items: center; gap: 10px;
+    .brand-icon { color: var(--accent); font-size: 20px; }
+    .brand-text { font-family: var(--font-display); font-size: 22px; letter-spacing: 4px; }
+  }
+  .nav-actions { display: flex; align-items: center; gap: 16px; }
+  .admin-badge { padding: 4px 10px; background: var(--accent); color: #000; font-size: 10px; font-weight: 800; letter-spacing: 2px; border-radius: 2px; }
+}
+
+.page-header {
+  padding: 50px 40px 30px;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;
+  flex-wrap: wrap;
+  h1.page-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 72px); letter-spacing: 6px; }
+  .stats { display: flex; gap: 24px;
+    .stat { display: flex; flex-direction: column; align-items: center; gap: 2px;
+      .stat-val { font-family: var(--font-display); font-size: 36px; color: var(--accent); }
+      .stat-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); }
+    }
+  }
+}
+
+.filters {
+  padding: 0 40px 24px;
+  display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap;
+  .filter-group { display: flex; flex-direction: column; gap: 6px;
+    label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); }
+    select, input {
+      padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text); font-size: 13px; font-family: var(--font-body);
+      min-width: 160px;
+      &:focus { border-color: var(--accent); outline: none; }
+      option { background: var(--bg-card); }
+    }
+  }
+  .filter-result { font-size: 12px; color: var(--text-muted); padding-bottom: 10px; }
+}
+
+.state-container { display: flex; align-items: center; justify-content: center; min-height: 300px; }
+.loader { text-align: center; color: var(--text-dim);
+  .loader-ring { width: 40px; height: 40px; border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  p { font-size: 13px; }
+}
+.error-state { text-align: center; color: var(--text-dim);
+  .error-icon { display: block; font-size: 40px; margin-bottom: 12px; }
+  p { margin-bottom: 16px; }
+}
+
+.orders-table-wrap { padding: 0 40px 60px; overflow-x: auto; }
+
+.orders-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  thead tr { border-bottom: 2px solid var(--border); }
+  th { padding: 12px 16px; text-align: left; font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); }
+  tbody tr {
+    border-bottom: 1px solid var(--border); transition: var(--transition);
+    &:hover { background: var(--bg-elevated); }
+  }
+  td { padding: 16px; }
+  .id-cell { font-family: var(--font-display); font-size: 20px; color: var(--accent); }
+  .user-cell { font-weight: 600; }
+}
+
+.order-status {
+  display: inline-block; padding: 4px 12px; border-radius: 2px;
+  font-size: 10px; font-weight: 800; letter-spacing: 1px;
+  &.status-pending { background: rgba(255,170,68,0.15); color: #ffaa44; border: 1px solid rgba(255,170,68,0.3); }
+  &.status-cancelled { background: rgba(255,68,68,0.15); color: var(--error); border: 1px solid rgba(255,68,68,0.3); }
+  &.status-done { background: rgba(68,204,136,0.15); color: #44cc88; border: 1px solid rgba(68,204,136,0.3); }
+}
+
+.cancel-btn-sm {
+  padding: 6px 14px; background: transparent; border: 1px solid rgba(255,68,68,0.3);
+  border-radius: var(--radius); color: var(--error); font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
+  &:hover:not(:disabled) { background: rgba(255,68,68,0.08); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+.done-label { font-size: 11px; color: var(--text-muted); }
+
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  padding: 12px 28px; border-radius: var(--radius); font-size: 13px; font-weight: 600; z-index: 9999;
+  &.success { background: var(--success); color: #000; }
+  &.error { background: var(--error); color: #fff; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

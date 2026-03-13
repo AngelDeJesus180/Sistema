@@ -1,0 +1,76 @@
+<div class="orders-page">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">◈</span>
+      <span class="brand-text">CAMISETAS</span>
+    </div>
+    <div class="nav-actions">
+      <span class="nav-user">{{ username }}</span>
+      <button class="btn-ghost" (click)="goBack()">← Catálogo</button>
+      <button class="btn-ghost" (click)="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <h1 class="page-title">MIS PEDIDOS</h1>
+    <p class="page-sub">{{ orders.length }} pedido(s) realizados</p>
+  </header>
+
+  <div class="state-container" *ngIf="loading">
+    <div class="loader"><div class="loader-ring"></div><p>Cargando pedidos...</p></div>
+  </div>
+
+  <div class="state-container" *ngIf="error && !loading">
+    <div class="error-state">
+      <span class="error-icon">⚠</span><p>{{ error }}</p>
+      <button class="btn-ghost" (click)="load()">Reintentar</button>
+    </div>
+  </div>
+
+  <div class="state-container" *ngIf="!loading && !error && orders.length === 0">
+    <div class="error-state">
+      <span class="error-icon">📦</span>
+      <p>Aún no tienes pedidos</p>
+      <button class="btn-primary" (click)="goBack()">IR AL CATÁLOGO</button>
+    </div>
+  </div>
+
+  <div class="orders-list fade-in" *ngIf="!loading && !error && orders.length > 0">
+    <div class="order-card" *ngFor="let order of orders">
+      <div class="order-header">
+        <div class="order-id-wrap">
+          <span class="order-label">PEDIDO</span>
+          <span class="order-id">#{{ order.id }}</span>
+        </div>
+        <span class="order-status" [ngClass]="getStatusClass(order.status)">
+          {{ order.status }}
+        </span>
+      </div>
+
+      <div class="order-body">
+        <div class="order-detail">
+          <span class="detail-label">PRODUCTO ID</span>
+          <span class="detail-value">{{ order.productoId }}</span>
+        </div>
+        <div class="order-detail">
+          <span class="detail-label">CANTIDAD</span>
+          <span class="detail-value">{{ order.cantidad }}</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <button class="cancel-btn"
+                *ngIf="canCancel(order)"
+                [disabled]="cancellingId === order.id"
+                (click)="cancel(order)">
+          {{ cancellingId === order.id ? 'Cancelando...' : '✕ Cancelar pedido' }}
+        </button>
+        <span class="cancelled-label" *ngIf="!canCancel(order)">Pedido cancelado</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" [class.success]="toastType==='success'" [class.error]="toastType==='error'" *ngIf="toast">
+    {{ toast }}
+  </div>
+</div>

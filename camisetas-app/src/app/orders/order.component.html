@@ -1,0 +1,93 @@
+<div class="order-page">
+
+  <!-- Back -->
+  <nav class="order-nav">
+    <button class="btn-ghost back-btn" (click)="goBack()">← Volver al catálogo</button>
+    <div class="nav-brand">
+      <span style="color:var(--accent)">◈</span>
+      <span style="font-family:var(--font-display);letter-spacing:4px">CAMISETAS</span>
+    </div>
+  </nav>
+
+  <!-- Success State -->
+  <div class="success-screen fade-in" *ngIf="success">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      <h2>¡Pedido Confirmado!</h2>
+      <p *ngIf="orderId">Pedido #{{ orderId }}</p>
+      <p class="success-detail">
+        <strong>{{ cantidad }}x {{ camiseta?.color }} Manga {{ camiseta?.tipoManga }}</strong><br>
+        Talla {{ camiseta?.talla }} — Total: ${{ total | number }}
+      </p>
+      <button class="btn-primary" (click)="goBack()">VER MÁS CAMISETAS</button>
+    </div>
+  </div>
+
+  <!-- Order Form -->
+  <div class="order-container fade-in" *ngIf="!success && camiseta">
+
+    <div class="order-left">
+      <div class="product-display">
+        <div class="product-visual">
+          <span class="product-icon">◈</span>
+          <span class="talla-big">{{ camiseta.talla }}</span>
+        </div>
+        <div class="product-info">
+          <p class="product-label">PRODUCTO</p>
+          <h2 class="product-name">{{ camiseta.color }} — Manga {{ camiseta.tipoManga }}</h2>
+          <div class="product-tags">
+            <span class="tag">TALLA {{ camiseta.talla }}</span>
+            <span class="tag stock">{{ camiseta.stock }} disponibles</span>
+          </div>
+          <p class="product-price">${{ camiseta.precio | number }}</p>
+          <p class="price-label">precio por unidad</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-right">
+      <h1 class="order-title">TU PEDIDO</h1>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="order-form">
+
+        <div class="field">
+          <label>CANTIDAD</label>
+          <div class="qty-control">
+            <button type="button" class="qty-btn" (click)="decrement()" [disabled]="cantidad <= 1">−</button>
+            <input type="number" formControlName="cantidad" min="1" [max]="maxStock" />
+            <button type="button" class="qty-btn" (click)="increment()" [disabled]="camiseta ? cantidad >= camiseta.stock : false">+</button>
+          </div>
+          <p class="stock-hint" *ngIf="camiseta">
+            <span [class.warning]="stockExceeded">
+              {{ stockExceeded ? '⚠ Superas el stock disponible (' + camiseta.stock + ')' : 'Máximo disponible: ' + camiseta.stock }}
+            </span>
+          </p>
+        </div>
+
+        <!-- Summary -->
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Precio unitario</span>
+            <span>${{ camiseta.precio | number }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Cantidad</span>
+            <span>× {{ form.value.cantidad }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>TOTAL</span>
+            <span class="total-amount">${{ total | number }}</span>
+          </div>
+        </div>
+
+        <div class="error-msg" *ngIf="error">{{ error }}</div>
+
+        <button type="submit" class="btn-primary submit-btn" [disabled]="loading || form.invalid || stockExceeded">
+          <span *ngIf="!loading">CONFIRMAR PEDIDO</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>

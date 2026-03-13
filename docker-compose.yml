@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ajp64572314.
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/auth_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Ajp64572314.
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres-db
+
+  catalog-service:
+    build: ./catalog-service
+    container_name: catalog-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/catalog_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Ajp64572314.
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres-db
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/orders_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Ajp64572314.
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres-db
+
+  api-gateway:
+    build: ./api-gateway2
+    container_name: api-gateway
+    ports:
+      - "8081:8081"
+    depends_on:
+      - auth-service
+      - catalog-service
+      - order-service
+
+
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  frontend:
+    build: ./camisetas-app
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+      - auth-service
+      - order-service
+volumes:
+  pgdata:
